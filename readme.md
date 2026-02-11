@@ -1,1 +1,1 @@
-im lowkey evil like that
+To chat click here or press "/"
