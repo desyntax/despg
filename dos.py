@@ -69,8 +69,9 @@ while True:
     elif command.startswith("page"):
         if command.startswith("page "):
             try:
-                file = open(f"{command.removeprefix('page ')}")
+                file = open(f"{command.removeprefix('page ')}", "r")
                 print(file.read())
+                file.close()
             except FileNotFoundError:
                 print(f"File '{command.removeprefix('page ')}' not found. Check your spelling or its existence.")
         else:
@@ -96,12 +97,21 @@ while True:
     elif command.startswith("pencil"):
         if command.startswith("pencil "):
             try:
-                file = open(f"{command.removeprefix('pencil ')}")
-                print(file.write())
+                file = open("{command.removeprefix('pencil ')}", "w")
+                print(f"{command.removeprefix('pencil ')} opened in OVERWRITE mode")
+                print("Type <close> to end writing and save.")
+                while True:
+                    newline = input()
+                    if newline == "<close>":
+                        print(f"Closed {command.removeprefix('pencil ')} and saved all changes.")
+                        break
+                    file.write(newline)
             except FileNotFoundError:
-                print(f"File '{command.removeprefix('pencil ')}' does not exist. Create it? (y/N)")
-                choice = input("{username.upper()}@{osname}> ")
+                print(f"File '{command.removeprefix("pencil ")}' does not exist. Create it? (y/N)")
+                choice = input("> ")
                 if choice == "y".casefold():
+                    file = open(command.removeprefix("pencil "))
+                    file.write()
                     print("File has been created.")
                 else:
                     print("Aborted.")
