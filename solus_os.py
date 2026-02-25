@@ -45,10 +45,10 @@ def login():
             print("Incorrect username or password. Try again, noob.")
 def write(mode):
     file = open(f"{command.removeprefix('pencil ')}", f"{mode}")
-        if mode == "w":
-            print(f"{command.removeprefix('pencil ')} opened in OVERWRITE mode")
-        else:
-            print(f"{command.removeprefix('pencil ')} opened in APPEND mode")
+    if mode == "w":
+        print(f"{command.removeprefix('pencil ')} opened in OVERWRITE mode")
+    else:
+        print(f"{command.removeprefix('pencil ')} opened in APPEND mode")
         print("Type <close> to end writing and save.")
         while True:
             newline = input()
@@ -126,4 +126,5 @@ while True:
         print(f"'{command}' not a recognised command. Use 'help' to view a list of commands.")
 
 # like and subscribe for more epic code
+
 
