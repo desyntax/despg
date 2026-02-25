@@ -19,13 +19,16 @@ arg1 = ""
 arg2 = ""
 arg3 = ""
 helpList = """Solus OS command line. Copyright 2026. All rights reserved.
-help             -- Displays this help message.
-logoff           -- Logs out of this computer.
-output <str>     -- Prints <str> to the screen.
-cat <file>       -- Prints text from <file>.
-username <str>   -- Sets a new username.
-password <str>   -- Sets a new password.
-osname <str>     -- Sets a new OS name."""
+help                 -- Displays this help message.
+logoff               -- Logs out of this computer.
+output <str>         -- Prints <str> to the screen.
+page <file>          -- Prints text from <file>.
+pencil <file> [;a]   -- Writes text for <file>.
+username <str>       -- Sets a new username.
+password <str>       -- Sets a new password.
+osname <str>         -- Sets a new OS name.
+
+Use help <command> to view more details about a command."""
 print("Loaded variables.")
 
 # definitions
@@ -63,15 +66,15 @@ while True:
             print(command.removeprefix("output "))
         else:
             print("'output' takes one argument, <str>.")
-    elif command.startswith("cat"):
-        if command.startswith("cat "):
+    elif command.startswith("page"):
+        if command.startswith("page "):
             try:
-                file = open(f"{command.removeprefix('cat ')}")
+                file = open(f"{command.removeprefix('page ')}")
                 print(file.read())
             except FileNotFoundError:
-                print(f"File '{command.removeprefix('cat ')}' not found. Check your spelling or its existence.")
+                print(f"File '{command.removeprefix('page ')}' not found. Check your spelling or its existence.")
         else:
-            print("'cat' takes one argument, <file>.")
+            print("'page' takes one argument, <file>.")
     elif command.startswith("username"):
         if command.startswith("username "):
             username = command.removeprefix("username ")
@@ -90,6 +93,20 @@ while True:
             print(f"Updated OS name to {osname}.")
         else:
             print("'osname' takes one argument, <str>.")
+    elif command.startswith("pencil"):
+        if command.startswith("pencil "):
+            try:
+                file = open(f"{command.removeprefix('pencil ')}")
+                print(file.write())
+            except FileNotFoundError:
+                print(f"File '{command.removeprefix('pencil ')}' does not exist. Create it? (y/N)")
+                choice = input("{username.upper()}@{osname}> ")
+                if choice == "y".casefold():
+                    print("File has been created.")
+                else:
+                    print("Aborted.")
+        else:
+            print("'pencil' takes one argument, <file>.")
     else:
         print(f"'{command}' not a recognised command. Use 'help' to view a list of commands.")
 
