@@ -18,15 +18,15 @@ osname = "Solus"
 arg1 = ""
 arg2 = ""
 arg3 = ""
-helpList = """Solus OS command line. Copyright 2026. All rights reserved.
-help                 -- Displays this help message.
-logoff               -- Logs out of this computer.
-output <str>         -- Prints <str> to the screen.
-page <file>          -- Prints text from <file>.
-pencil <file> [;a]   -- Writes text for <file>.
-username <str>       -- Sets a new username.
-password <str>       -- Sets a new password.
-osname <str>         -- Sets a new OS name.
+helpList = """Solus OS command line, build indev_1. Copyright 2026. All rights reserved.
+help                    -- Displays this help message.
+logoff                  -- Logs out of this computer.
+output <str>            -- Prints <str> to the screen.
+page <file>             -- Prints text from <file>.
+pencil <file> [;a]      -- Writes text for <file>.
+username <str>          -- Sets a new username.
+password <str>          -- Sets a new password.
+osname <str>            -- Sets a new OS name.
 
 Use help <command> to view more details about a command."""
 print("Loaded variables.")
@@ -39,15 +39,28 @@ def login():
         tryPassword = input("PASSWORD> ")
         if tryUsername == username and tryPassword == password:
             print(f"Logged in. Welcome, {username}")
-            del tryUsername
-            del tryPassword
+            del tryUsername, tryPassword
             break
         else:
             print("Incorrect username or password. Try again, noob.")
+def write(mode):
+    file = open(f"{command.removeprefix('pencil ')}", f"{mode}")
+        if mode == "w":
+            print(f"{command.removeprefix('pencil ')} opened in OVERWRITE mode")
+        else:
+            print(f"{command.removeprefix('pencil ')} opened in APPEND mode")
+        print("Type <close> to end writing and save.")
+        while True:
+            newline = input()
+            if newline == "<close>":
+                print(f"Closed {command.removeprefix('pencil ')} and saved all changes.")
+                break
+            file.write(newline)
 print("Loaded definitions.")
 bootEnd = time.time()
 bootTime = bootEnd - bootStart
 print(f"Booted in {round((bootTime * 1000), 4)} milliseconds.")
+del bootStart, bootEnd, bootTime
 print("No fatal errors encountered during boot.")
 
 print()
@@ -96,22 +109,14 @@ while True:
             print("'osname' takes one argument, <str>.")
     elif command.startswith("pencil"):
         if command.startswith("pencil "):
+            if command.
             try:
-                file = open("{command.removeprefix('pencil ')}", "w")
-                print(f"{command.removeprefix('pencil ')} opened in OVERWRITE mode")
-                print("Type <close> to end writing and save.")
-                while True:
-                    newline = input()
-                    if newline == "<close>":
-                        print(f"Closed {command.removeprefix('pencil ')} and saved all changes.")
-                        break
-                    file.write(newline)
+                file = open(command.removeprefix("pencil "), f"")
             except FileNotFoundError:
                 print(f"File '{command.removeprefix("pencil ")}' does not exist. Create it? (y/N)")
                 choice = input("> ")
                 if choice == "y".casefold():
-                    file = open(command.removeprefix("pencil "))
-                    file.write()
+                    file = open(command.removeprefix("pencil "), "x")
                     print("File has been created.")
                 else:
                     print("Aborted.")
@@ -121,3 +126,4 @@ while True:
         print(f"'{command}' not a recognised command. Use 'help' to view a list of commands.")
 
 # like and subscribe for more epic code
+
