@@ -1,4 +1,4 @@
-# Solus CLI created 24/02/2026
+# SOLUS by DESYNTAX - VERSION indev_2 - CREATED 24/02/26 - LAST UPDATED  - 27/02/26
 print("Starting CLI...")
 
 # imports
@@ -35,17 +35,17 @@ helpList = """Solus command line interface, build indev_2. Open-sourced project.
 Command format:
 command <necessary_arguments> [optional_arguments]    -- Short description of command
 
-help [command]          -- Displays this help message
-logout                  -- Logs out of Solus
-output <str>            -- Prints <str> to the screen
-page <file>             -- Prints text from <file>
-pencil <file> [;a]      -- Writes text in <file>
-username <str>          -- Sets a new username
-password <str>          -- Sets a new password
-osname <str>            -- Sets a new OS name
-info                    -- Prints information about Solus
+help [command]              -- Displays this help message or info about a command
+logout                      -- Logs out of Solus
+output <str>                -- Prints <str> to the screen
+page <file>                 -- Prints text from <file>
+pencil <file> [;a]          -- Writes text in <file>
+username <str>              -- Sets a new username
+password <str>              -- Sets a new password
+osname <str>                -- Sets a new OS name
+info                        -- Prints information about Solus
 
-Use help [command] to view more details about a command."""
+Use help [command] to view more details about a command (not yet implemented)."""
 print("Loaded variables.")
 
 # definitions
@@ -172,6 +172,7 @@ while True:
             except FileNotFoundError:
                     print("'info.txt' was not found. Are you in Solus' directory?")
     else:
-        print(f"'{command}' not a recognised command. Use 'help' to view a list of commands.")
+        print(f"'{command}' is not a recognised command. Use 'help' to view a list of commands.")
 
 # like and subscribe for more epic code
+
