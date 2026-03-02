@@ -1,4 +1,4 @@
-# SOLUS by DESYNTAX - VERSION indev_2 - CREATED 24/02/26 - LAST UPDATED  - 02/03/26
+# SOLUS by DESYNTAX - VERSION indev_2 - CREATED 24/02/26 - LAST UPDATED 02/03/26
 print("Starting CLI...")
 
 # imports
@@ -182,3 +182,4 @@ while True:
         print(f"'{command}' not a recognised command. Use 'help' to view a list of commands.")
 
 # like and subscribe for more epic code
+
