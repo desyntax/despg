@@ -1,4 +1,4 @@
-# SOLUS by DESYNTAX - VERSION indev_2 - CREATED 24/02/26 - LAST UPDATED  - 27/02/26
+# SOLUS by DESYNTAX - VERSION indev_2 - CREATED 24/02/26 - LAST UPDATED  - 02/03/26
 print("Starting CLI...")
 
 # imports
@@ -12,9 +12,13 @@ time
 os
 sys
 On your machine's command line, run 'pip install <module>'.
-Press RETURN to exit.""")
-    input("> ")
-    exit()
+You should be able to run Solus without these modules imported, but some functionalities could be broken because of this.
+Proceed? (y/N)""")
+    dangerousProceed = input("> ")
+    if dangerousProceed == "y".casefold():
+        print("Skipping module imports.")
+    else:
+        exit()
 except MemoryError:
     print("Solus does not have enough memory to import necessary modules. Press RETURN to exit.")
     input("> ")
@@ -35,17 +39,17 @@ helpList = """Solus command line interface, build indev_2. Open-sourced project.
 Command format:
 command <necessary_arguments> [optional_arguments]    -- Short description of command
 
-help [command]              -- Displays this help message or info about a command
-logout                      -- Logs out of Solus
-output <str>                -- Prints <str> to the screen
-page <file>                 -- Prints text from <file>
-pencil <file> [;a]          -- Writes text in <file>
-username <str>              -- Sets a new username
-password <str>              -- Sets a new password
-osname <str>                -- Sets a new OS name
-info                        -- Prints information about Solus
+help [command]          -- Displays this help message
+logout                  -- Logs out of Solus
+output <str>            -- Prints <str> to the screen
+page <file>             -- Prints text from <file>
+pencil <file> [;a]      -- Writes text in <file>
+username <str>          -- Sets a new username
+password <str>          -- Sets a new password
+osname <str>            -- Sets a new OS name
+info                    -- Prints information about Solus
 
-Use help [command] to view more details about a command (not yet implemented)."""
+Use help [command] to view more details about a command."""
 print("Loaded variables.")
 
 # definitions
@@ -85,19 +89,22 @@ def modifyInfo(oldName):
 print("Loaded definitions.")
 
 # initialise
-print(f"Found {os.cpu_count()} CPU cores.")
-try:
-    fileStats = str(os.stat("solus.py")).split(", ")
-    fileSize = str(fileStats[6]).removeprefix("st_size=")
-    print(f"Solus occupies {fileSize} bytes of disk space.")
-    del fileStats, fileSize
-except FileNotFoundError:
-    print("Solus couldn't locate itself to record its disk usage. Proceeding anyway...")
-print(f"Solus is running on a {sys.platform} system.")
-bootEnd = time.time()
-bootTime = bootEnd - bootStart
-print(f"Booted in {round((bootTime * 1000), 4)} milliseconds.")
-del bootStart, bootEnd, bootTime, time, os, sys
+if dangerousProceed != "y":
+    print(f"Found {os.cpu_count()} CPU cores.")
+    try:
+        fileStats = str(os.stat("solus.py")).split(", ")
+        fileSize = str(fileStats[6]).removeprefix("st_size=")
+        print(f"Solus occupies {fileSize} bytes of disk space.")
+        del fileStats, fileSize
+    except FileNotFoundError:
+        print("Solus couldn't locate itself to record its disk usage. Proceeding anyway...")
+    print(f"Solus is running on a {sys.platform} system.")
+    bootEnd = time.time()
+    bootTime = bootEnd - bootStart
+    print(f"Booted in {round((bootTime * 1000), 4)} milliseconds.")
+    del bootStart, bootEnd, bootTime, time, os, sys
+else:
+    print("Skipped checking OS due to missing modules.")
 print("No fatal errors encountered during boot.", end="\n\n")
 print(welcomeMessage, end="\n\n")
 login()
@@ -172,7 +179,6 @@ while True:
             except FileNotFoundError:
                     print("'info.txt' was not found. Are you in Solus' directory?")
     else:
-        print(f"'{command}' is not a recognised command. Use 'help' to view a list of commands.")
+        print(f"'{command}' not a recognised command. Use 'help' to view a list of commands.")
 
 # like and subscribe for more epic code
-
