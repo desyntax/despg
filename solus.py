@@ -1,11 +1,10 @@
 # SOLUS by DESYNTAX - VERSION indev_2 - CREATED 24/02/26 - LAST UPDATED 02/03/26
 print("Starting CLI...")
+dangerousProceed = ""
 
 # imports
 try:
-    import time
-    import os
-    import sys
+    import time, os, sys
 except ModuleNotFoundError:
     print("""Solus has run into an error and cannot import certain necessary modules. Please ensure you have the following:
 time
@@ -30,23 +29,27 @@ print("Loaded necessary modules.")
 solus_info = {
     "username": "desyntax",
     "password": "password",
-    "osname": "Solus"
+    "solusname": "Solus"
 }
 welcomeMessage = "Solus CLI indev_2, created by Desyntax on 24/02/2026."
 command = ""
-commandList = ["help", "logoff", "output", "page", "pencil", "username", "password", "osname"]
+cwd = __file__.removesuffix("solus.py")
+commandList = ["help", "logoff", "output", "ls", "cwd", "page", "pencil", "retitle", "username", "password", "solusname"]
 helpList = """Solus command line interface, build indev_2. Open-sourced project.
 Command format:
-command <necessary_arguments> [optional_arguments]    -- Short description of command
+command <necessary_arguments> [;optional_arguments] -- Description [modules_necessary]
 
 help [command]          -- Displays this help message
 logout                  -- Logs out of Solus
 output <str>            -- Prints <str> to the screen
+ls                      -- Prints files and dirs in CWD to the screen [os]
+cwd <dir>               -- Changes current working directory to <dir> [os]
 page <file>             -- Prints text from <file>
 pencil <file> [;a]      -- Writes text in <file>
+retitle <file> <str>    -- Renames <file> to <str> (not yet functional)
 username <str>          -- Sets a new username
 password <str>          -- Sets a new password
-osname <str>            -- Sets a new OS name
+solusname <str>         -- Sets a new name for Solus
 info                    -- Prints information about Solus
 
 Use help [command] to view more details about a command."""
@@ -90,9 +93,9 @@ print("Loaded definitions.")
 
 # initialise
 if dangerousProceed != "y":
-    print(f"Found {os.cpu_count()} CPU cores.")
+    print(f"Found {os.cpu_count()} CPU threads.")
     try:
-        fileStats = str(os.stat("solus.py")).split(", ")
+        fileStats = str(os.stat(__file__)).split(", ")
         fileSize = str(fileStats[6]).removeprefix("st_size=")
         print(f"Solus occupies {fileSize} bytes of disk space.")
         del fileStats, fileSize
@@ -102,26 +105,27 @@ if dangerousProceed != "y":
     bootEnd = time.time()
     bootTime = bootEnd - bootStart
     print(f"Booted in {round((bootTime * 1000), 4)} milliseconds.")
-    del bootStart, bootEnd, bootTime, time, os, sys
+    del bootStart, bootEnd, bootTime
 else:
     print("Skipped checking OS due to missing modules.")
+del dangerousProceed
 print("No fatal errors encountered during boot.", end="\n\n")
 print(welcomeMessage, end="\n\n")
 login()
 
 while True:
-    command = input(f"{solus_info["username"].upper()}@{solus_info["osname"]}> ")
-    if command == "help":
+    command = input(f"{solus_info['username'].upper()}@{solus_info['solusname']}> ")
+    if command == "help": # help
         print(helpList)
-    elif command == "logout":
+    elif command == "logout": # logout
         print("You have successfully logged out.")
         login()
-    elif command.startswith("output"):
+    elif command.startswith("output"): # output
         if command.startswith("output "):
             print(command.removeprefix("output "))
         else:
             print("'output' takes one argument, <str>.")
-    elif command.startswith("page"):
+    elif command.startswith("page"): # page
         if command.startswith("page "):
             try:
                 file = open(command.removeprefix('page '))
@@ -138,15 +142,21 @@ while True:
                 print(f"'{command.removeprefix("page ")}' does not exist.")
             except PermissionError:
                 print(f"Solus doesn't have permissions to read '{command.removeprefix("page ")}'. Are you root?")
+            except OSError:
+                print(f"Solus couldn't open '{command.removeprefix("page ")}'.")
+            except UnicodeDecodeError:
+                print(f"'{command.removeprefix('page ')}' can't be read because of a Unicode decode error.")
+            except MemoryError:
+                print("There isn't enough memory on this system to read this file.")
         else:
             print("'page' takes one argument, <file>.")
-    elif command.startswith("username"):
+    elif command.startswith("username"): # username
         modifyInfo("username")
-    elif command.startswith("password"):
+    elif command.startswith("password"): # password
         modifyInfo("password")
-    elif command.startswith("osname"):
-        modifyInfo("osname")
-    elif command.startswith("pencil"):
+    elif command.startswith("solusname"): # solusname
+        modifyInfo("solusname")
+    elif command.startswith("pencil"): # pencil
         if command.startswith("pencil "):
             try:
                 file = open(command.removeprefix('pencil '))
@@ -160,7 +170,7 @@ while True:
                 print(f"File '{command.removeprefix('pencil ')}' cannot be accessed. You may not have permissions to modify it.")
         else:
             print("'pencil' takes at least one argument, <file>.")
-    elif command.startswith("info"):
+    elif command.startswith("info"): # info
         if command.startswith("info "):
             if command == "info ":
                 try:
@@ -169,8 +179,10 @@ while True:
                     file.close()
                 except FileNotFoundError:
                     print("'info.txt' was not found. Are you in Solus' directory?")
+                except PermissionError:
+                    print("'info.txt' could not be read.")
             else:
-                print(f"'info' takes zero arguments, found one: '{command.removeprefix("info ")}'")
+                print(f"'info' takes zero arguments.")
         else:
             try:
                 file = open("info.txt", "r")
@@ -178,8 +190,31 @@ while True:
                 file.close()
             except FileNotFoundError:
                     print("'info.txt' was not found. Are you in Solus' directory?")
+    elif command.startswith("retitle"): # retitle
+        if command.startswith("retitle "):
+            print("This command doesn't do anything yet. Sorry.")
+        else:
+            print("'retitle' takes at least two arguments, <file> and <name>.")
+    elif command.startswith("ls"): # ls
+        if command.startswith("ls "):
+            print("'ls' takes zero arguments.")
+        else:
+            print(f"All in '{cwd}':")
+            print(os.listdir(cwd))
+    elif command.startswith("cwd"): # cwd
+        if command.startswith("cwd "):
+            try:
+                os.chdir(command.removeprefix('cwd '))
+                print(f"Changed directory to '{cwd}'")
+            except FileNotFoundError:
+                print(f"Directory '{command.removeprefix('cwd ')}' doesn't exist.")
+            except NotADirectoryError:
+                print(f"'{command.removeprefix('cwd')}' is a file, not a directory.")
+            except PermissionError:
+                print(f"Solus doesn't have permission to change to this directory.")
+        else:
+            print("'cwd' takes at least one argument, <dir>.")
     else:
         print(f"'{command}' not a recognised command. Use 'help' to view a list of commands.")
 
 # like and subscribe for more epic code
-
