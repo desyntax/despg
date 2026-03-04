@@ -51,8 +51,10 @@ username <str>          -- Sets a new username
 password <str>          -- Sets a new password
 solusname <str>         -- Sets a new name for Solus
 info                    -- Prints information about Solus
+copyright               -- Prints copyright information about Solus
 
 Use help [command] to view more details about a command."""
+copyr = "Solus indev_2, created by Desyntax. All content, including code, are public domain."
 print("Loaded variables.")
 
 # definitions
@@ -214,6 +216,11 @@ while True:
                 print(f"Solus doesn't have permission to change to this directory.")
         else:
             print("'cwd' takes at least one argument, <dir>.")
+    elif command.startswith("copyright"):
+        if command.startswith("copyright "):
+            print("'copyright' takes zero arguments.")
+        else:
+            print(copyr)
     else:
         print(f"'{command}' not a recognised command. Use 'help' to view a list of commands.")
 
