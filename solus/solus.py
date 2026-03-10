@@ -1,15 +1,19 @@
-# SOLUS by DESYNTAX - VERSION indev_2 - CREATED 24/02/26 - LAST UPDATED 02/03/26
+# SOLUS by DESYNTAX - VERSION indev_3 - CREATED 24/02/26 - LAST UPDATED 10/03/26
 print("Starting CLI...")
 dangerousProceed = ""
 
 # imports
 try:
-    import time, os, sys
+    import time, os, sys, shutil, configparser
+    from pathlib import Path
 except ModuleNotFoundError:
     print("""Solus has run into an error and cannot import certain necessary modules. Please ensure you have the following:
 time
 os
 sys
+shutil
+pathlib
+configparser
 On your machine's command line, run 'pip install <module>'.
 You should be able to run Solus without these modules imported, but some functionalities could be broken because of this.
 Proceed? (y/N)""")
@@ -25,19 +29,26 @@ except MemoryError:
 bootStart = time.time()
 print("Loaded necessary modules.")
 
-# variables
+# config
+config = configparser.ConfigParser()
+config.read("config.txt")
 solus_info = {
-    "username": "desyntax",
-    "password": "password",
-    "solusname": "Solus"
+    "username": config['DEFAULT']['username'],
+    "password": config['DEFAULT']['password'],
+    "solusname": config['DEFAULT']['solusname']
 }
-welcomeMessage = "Solus CLI indev_2, created by Desyntax on 24/02/2026."
+print("Loaded configuration file.")
+
+# variables
+welcomeMessage = "Solus CLI indev_3, created by Desyntax on 24/02/2026."
 command = ""
 cwd = __file__.removesuffix("solus.py")
-commandList = ["help", "logoff", "output", "ls", "cwd", "page", "pencil", "retitle", "username", "password", "solusname"]
-helpList = """Solus command line interface, build indev_2. Open-sourced project.
+inSolusDirectory = "$"
+helpList = """Solus command line interface, build indev_3. Open-sourced project.
 Command format:
 command <necessary_arguments> [;optional_arguments] -- Description [modules_necessary]
+Interpreter format:
+(USERNAME)@(Solusname)(directory)>
 
 help [command]          -- Displays this help message
 logout                  -- Logs out of Solus
@@ -45,8 +56,11 @@ output <str>            -- Prints <str> to the screen
 ls                      -- Prints files and dirs in CWD to the screen [os]
 cwd <dir>               -- Changes current working directory to <dir> [os]
 page <file>             -- Prints text from <file>
-pencil <file> [;a]      -- Writes text in <file>
-retitle <file> <str>    -- Renames <file> to <str> (not yet functional)
+nano <file> [;a]        -- Writes text in <file>
+banana <dir>            -- Creates a directory called <dir> [os]
+touch <file>            -- Creates a file called <file> [pathlib]
+boom <file              -- Deletes <file> from current directory [shutil, os]
+rep <file> <str>        -- Renames <file> to <str>
 username <str>          -- Sets a new username
 password <str>          -- Sets a new password
 solusname <str>         -- Sets a new name for Solus
@@ -71,26 +85,27 @@ def login():
         else:
             print("Incorrect username or password.")
 def write(mode):
-    file = open(f"{command.removeprefix('pencil ')}", mode)
+    file = open(f"{command.removeprefix('nano ')}", mode)
     if mode == "w":
-        print(f"{command.removeprefix('pencil ')} opened in OVERWRITE mode")
+        print(f"{command.removeprefix('nano ')} opened in OVERWRITE mode")
     else:
-        print(f"{command.removeprefix('pencil ')} opened in APPEND mode")
+        print(f"{command.removeprefix('nano ')} opened in APPEND mode")
     print("Type <close> to end writing and save.")
     while True:
         newline = input()
         if newline == "<close>":
-            print(f"Closed {command.removeprefix('pencil ')} and saved all changes.")
+            print(f"Closed {command.removeprefix('nano ')} and saved all changes.")
             break
-        file.write(newline)
+        file.write(newline + "\n")
     file.close()
-def modifyInfo(oldName):
-    if command.startswith(f"{oldName} "):
-        newName = command.removeprefix(f"{oldName} ")
-        solus_info[oldName] = newName
-        print(f"Updated {oldName} to {newName}.")
+def modifyInfo(part):
+    global config, solus_info
+    if command.startswith(f"{part} "):
+        newName = command.removeprefix(f"{part} ")
+        config['DEFAULT'][part] = newName
+        print(f"Updated {part} to {newName}.")
     else:
-        print(f"'{oldName}' takes one argument, <str>.")
+        print(f"'{part}' takes one argument, <str>.")
 print("Loaded definitions.")
 
 # initialise
@@ -99,7 +114,8 @@ if dangerousProceed != "y":
     try:
         fileStats = str(os.stat(__file__)).split(", ")
         fileSize = str(fileStats[6]).removeprefix("st_size=")
-        print(f"Solus occupies {fileSize} bytes of disk space.")
+        fileSize = int(fileSize)
+        print(f"Solus occupies {fileSize:,d} bytes of disk space.")
         del fileStats, fileSize
     except FileNotFoundError:
         print("Solus couldn't locate itself to record its disk usage. Proceeding anyway...")
@@ -116,7 +132,7 @@ print(welcomeMessage, end="\n\n")
 login()
 
 while True:
-    command = input(f"{solus_info['username'].upper()}@{solus_info['solusname']}> ")
+    command = input(f"{solus_info['username'].upper()}@{solus_info['solusname']}{inSolusDirectory}> ")
     if command == "help": # help
         print(helpList)
     elif command == "logout": # logout
@@ -139,13 +155,13 @@ while True:
                 except FileNotFoundError:
                     print(f"File '{command.removeprefix('page ')}' not found. Check your spelling, its existence, or your permissions.")
             except IsADirectoryError:
-                print(f"'{command.removeprefix("page ")}' is a directory, not a file.")
+                print(f"'{command.removeprefix('page ')}' is a directory, not a file.")
             except FileNotFoundError:
-                print(f"'{command.removeprefix("page ")}' does not exist.")
+                print(f"'{command.removeprefix('page ')}' does not exist.")
             except PermissionError:
-                print(f"Solus doesn't have permissions to read '{command.removeprefix("page ")}'. Are you root?")
+                print(f"Solus doesn't have permissions to read '{command.removeprefix('page ')}'. Are you root?")
             except OSError:
-                print(f"Solus couldn't open '{command.removeprefix("page ")}'.")
+                print(f"Solus couldn't open '{command.removeprefix('page ')}'.")
             except UnicodeDecodeError:
                 print(f"'{command.removeprefix('page ')}' can't be read because of a Unicode decode error.")
             except MemoryError:
@@ -158,26 +174,28 @@ while True:
         modifyInfo("password")
     elif command.startswith("solusname"): # solusname
         modifyInfo("solusname")
-    elif command.startswith("pencil"): # pencil
-        if command.startswith("pencil "):
+    elif command.startswith("nano"): # pencil
+        if command.startswith("nano "):
             try:
-                file = open(command.removeprefix('pencil '))
+                file = open(command.removeprefix('nano '))
                 file.close()
                 try:
-                    command.index(f"{command.removeprefix('pencil ')}", command.find(";"))
+                    command.index(f"{command.removeprefix('nano ')}", command.find(";"))
                     write("a")
-                except ValueError:
+                except Exception:
                     write("w")
             except FileNotFoundError:
-                print(f"File '{command.removeprefix('pencil ')}' cannot be accessed. You may not have permissions to modify it.")
+                print(f"File '{command.removeprefix('nano ')}' cannot be accessed. You may not have permissions to modify it.")
+            except PermissionError:
+                print(f"File '{command.removeprefix('nano ')}' cannot be accessed due to unqualified permission.")
         else:
-            print("'pencil' takes at least one argument, <file>.")
+            print("'nano' takes at least one argument, <file>.")
     elif command.startswith("info"): # info
         if command.startswith("info "):
             if command == "info ":
                 try:
                     file = open("info.txt", "r")
-                    print(file.read(), end="")
+                    print(file.read(), end="\n")
                     file.close()
                 except FileNotFoundError:
                     print("'info.txt' was not found. Are you in Solus' directory?")
@@ -192,28 +210,35 @@ while True:
                 file.close()
             except FileNotFoundError:
                     print("'info.txt' was not found. Are you in Solus' directory?")
-    elif command.startswith("retitle"): # retitle
-        if command.startswith("retitle "):
-            print("This command doesn't do anything yet. Sorry.")
+    elif command.startswith("rep"): # retitle
+        if command.startswith("rep "):
+            rep()
+            os.rename(rep[1], rep[2])
+            print(f"Successfully renamed {rep[1]} to {rep[2]}.")
         else:
-            print("'retitle' takes at least two arguments, <file> and <name>.")
+            print("'rep' takes at least two arguments, <file> and <name>.")
     elif command.startswith("ls"): # ls
         if command.startswith("ls "):
             print("'ls' takes zero arguments.")
         else:
             print(f"All in '{cwd}':")
             print(os.listdir(cwd))
-    elif command.startswith("cwd"): # cwd
+    elif command.startswith("cwd"):  # cwd
         if command.startswith("cwd "):
             try:
-                os.chdir(command.removeprefix('cwd '))
+                new_dir = command.removeprefix("cwd ")
+                os.chdir(new_dir)
+                cwd = os.getcwd()
                 print(f"Changed directory to '{cwd}'")
+                del new_dir
             except FileNotFoundError:
                 print(f"Directory '{command.removeprefix('cwd ')}' doesn't exist.")
             except NotADirectoryError:
                 print(f"'{command.removeprefix('cwd')}' is a file, not a directory.")
             except PermissionError:
                 print(f"Solus doesn't have permission to change to this directory.")
+            except OSError:
+                print(f"Your operating system ran into an issue trying to perform this task.")
         else:
             print("'cwd' takes at least one argument, <dir>.")
     elif command.startswith("copyright"):
@@ -221,7 +246,52 @@ while True:
             print("'copyright' takes zero arguments.")
         else:
             print(copyr)
+    elif command.startswith("boom"):
+        if command.startswith("boom "):
+            try:
+                os.remove(command.removeprefix("boom "))
+                print(f"Successfully deleted '{command.removeprefix('boom ')}'.")
+            except Exception:
+                print(f"'{command.removeprefix('boom ')}' is a directory. Would you like to remove it? (y/N)")
+                choice = input("> ")
+                if choice == "y":
+                    try:
+                        shutil.rmtree(command.removeprefix('boom '))
+                        print(f"Successfully removed '{command.removeprefix('boom ')}'")
+                    except Exception as e:
+                        print(f"Error: {e}")
+                else:
+                    print("Aborted.")
+        else:
+            print("'rm' takes at least one argument, <file>")
+    elif command.startswith("banana"):
+        if command.startswith("banana "):
+            try:
+                os.mkdir(command.removeprefix("banana "))
+                print(f"Created directory '{command.removeprefix('banana ')}' in '{cwd}'.")
+            except Exception as e:
+                print(f"Error: {e}")
+        else:
+            print("'banana' takes at least one argument, <dir>")
+    elif command.startswith("touch"):
+        if command.startswith("touch "):
+            try:
+                Path(f"{command.removeprefix('touch ')}").touch()
+                print(f"Sucessfully created '{command.removeprefix('touch ')}' at '{cwd}'")
+            except FileExistsError:
+                print(f"'{command.removeprefix('touch ')}' already exists in '{cwd}'.")
+            except PermissionError:
+                print("Solus doesn't have the necessary permissions to perform this.")
+            except Exception as e:
+                print(f"Error: {e}")
+        else:
+            print("'touch' takes at least one argument, <file>.")
+                
     else:
         print(f"'{command}' not a recognised command. Use 'help' to view a list of commands.")
+    if cwd == __file__.removesuffix("solus.py"):
+        inSolusDirectory = "$"
+    else:
+        inSolusDirectory = "~"
 
 # like and subscribe for more epic code
