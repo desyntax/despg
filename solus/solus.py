@@ -81,7 +81,7 @@ ls                      -- Prints files and dirs in CWD to the screen [os]
 cwd <dir>               -- Changes current working directory to <dir> [os]
 scan <file>             -- Prints text from <file>
 nano <file> [;a]        -- Writes text in <file>
-banana <dir>            -- Creates a directory called <dir> [os]
+kin <dir>               -- Creates a directory called <dir> [os]
 touch <file>            -- Creates a file called <file> [pathlib]
 boom <file              -- Deletes <file> from current directory [shutil, os]
 rep <file> <str/dir>    -- Renames <file> to <str>, or moves <file> to <dir> [os]
@@ -293,15 +293,15 @@ while True:
                     print("Aborted.")
         else:
             print("'rm' takes at least one argument, <file>")
-    elif command.startswith("banana"): # banana
-        if command.startswith("banana "):
+    elif command.startswith("kin"): # kin
+        if command.startswith("kin "):
             try:
-                os.mkdir(command.removeprefix("banana "))
-                print(f"Created directory '{command.removeprefix('banana ')}' in '{cwd}'.")
+                os.mkdir(command.removeprefix("kin "))
+                print(f"Created directory '{command.removeprefix('kin ')}' in '{cwd}'.")
             except Exception as e:
                 print(f"Error: {e}")
         else:
-            print("'banana' takes at least one argument, <dir>")
+            print("'kin' takes at least one argument, <dir>")
     elif command.startswith("touch"): # touch
         if command.startswith("touch "):
             try:
@@ -331,4 +331,5 @@ while True:
         inSolusDirectory = "~"
 
 # like and subscribe for more epic code
+
 
