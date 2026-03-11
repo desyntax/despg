@@ -33,9 +33,9 @@ print("Loaded necessary modules.")
 config = configparser.ConfigParser()
 config.read("config.txt")
 solus_info = {
-    "username": config['DEFAULT']['username'],
-    "password": config['DEFAULT']['password'],
-    "solusname": config['DEFAULT']['solusname']
+    "username": config['SOLUS_INFO']['username'],
+    "password": config['SOLUS_INFO']['password'],
+    "solusname": config['SOLUS_INFO']['solusname']
 }
 print("Loaded configuration file.")
 
@@ -102,7 +102,7 @@ def modifyInfo(part):
     global config, solus_info
     if command.startswith(f"{part} "):
         newName = command.removeprefix(f"{part} ")
-        config['DEFAULT'][part] = newName
+        config['SOLUS_INFO'][part] = newName
         print(f"Updated {part} to {newName}.")
     else:
         print(f"'{part}' takes one argument, <str>.")
@@ -295,3 +295,4 @@ while True:
         inSolusDirectory = "~"
 
 # like and subscribe for more epic code
+
