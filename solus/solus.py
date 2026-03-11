@@ -8,9 +8,9 @@ try:
     from pathlib import Path
 except ModuleNotFoundError:
     print("""Solus has run into an error and cannot import certain necessary modules. Please ensure you have the following:
-time
 os
 sys
+time
 shutil
 pathlib
 configparser
