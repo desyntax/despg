@@ -55,7 +55,7 @@ logout                  -- Logs out of Solus
 output <str>            -- Prints <str> to the screen
 ls                      -- Prints files and dirs in CWD to the screen [os]
 cwd <dir>               -- Changes current working directory to <dir> [os]
-page <file>             -- Prints text from <file>
+scan <file>             -- Prints text from <file>
 nano <file> [;a]        -- Writes text in <file>
 banana <dir>            -- Creates a directory called <dir> [os]
 touch <file>            -- Creates a file called <file> [pathlib]
@@ -143,38 +143,38 @@ while True:
             print(command.removeprefix("output "))
         else:
             print("'output' takes one argument, <str>.")
-    elif command.startswith("page"): # page
-        if command.startswith("page "):
+    elif command.startswith("nano"): # nano
+        if command.startswith("nano "):
             try:
-                file = open(command.removeprefix('page '))
+                file = open(command.removeprefix('nano '))
                 file.close()
                 try:
-                    file = open(f"{command.removeprefix('page ')}", "r")
+                    file = open(f"{command.removeprefix('nano ')}", "r")
                     print(file.read())
                     file.close()
                 except FileNotFoundError:
-                    print(f"File '{command.removeprefix('page ')}' not found. Check your spelling, its existence, or your permissions.")
+                    print(f"File '{command.removeprefix('nano ')}' not found. Check your spelling, its existence, or your permissions.")
             except IsADirectoryError:
-                print(f"'{command.removeprefix('page ')}' is a directory, not a file.")
+                print(f"'{command.removeprefix('nano ')}' is a directory, not a file.")
             except FileNotFoundError:
-                print(f"'{command.removeprefix('page ')}' does not exist.")
+                print(f"'{command.removeprefix('nano ')}' does not exist. Use 'touch' to create it.")
             except PermissionError:
-                print(f"Solus doesn't have permissions to read '{command.removeprefix('page ')}'. Are you root?")
+                print(f"Solus doesn't have permissions to read '{command.removeprefix('nano ')}'. Are you root?")
             except OSError:
-                print(f"Solus couldn't open '{command.removeprefix('page ')}'.")
+                print(f"Solus couldn't open '{command.removeprefix('nano ')}'.")
             except UnicodeDecodeError:
-                print(f"'{command.removeprefix('page ')}' can't be read because of a Unicode decode error.")
+                print(f"'{command.removeprefix('nano ')}' can't be read because of a Unicode decode error.")
             except MemoryError:
                 print("There isn't enough memory on this system to read this file.")
         else:
-            print("'page' takes one argument, <file>.")
+            print("'nano' takes one argument, <file>.")
     elif command.startswith("username"): # username
         modifyInfo("username")
     elif command.startswith("password"): # password
         modifyInfo("password")
     elif command.startswith("solusname"): # solusname
         modifyInfo("solusname")
-    elif command.startswith("nano"): # pencil
+    elif command.startswith("nano"): # nano
         if command.startswith("nano "):
             try:
                 file = open(command.removeprefix('nano '))
@@ -210,7 +210,7 @@ while True:
                 file.close()
             except FileNotFoundError:
                     print("'info.txt' was not found. Are you in Solus' directory?")
-    elif command.startswith("rep"): # retitle
+    elif command.startswith("rep"): # rep
         if command.startswith("rep "):
             rep()
             os.rename(rep[1], rep[2])
@@ -241,12 +241,12 @@ while True:
                 print(f"Your operating system ran into an issue trying to perform this task.")
         else:
             print("'cwd' takes at least one argument, <dir>.")
-    elif command.startswith("copyright"):
+    elif command.startswith("copyright"): # copyright
         if command.startswith("copyright "):
             print("'copyright' takes zero arguments.")
         else:
             print(copyr)
-    elif command.startswith("boom"):
+    elif command.startswith("boom"): # boom
         if command.startswith("boom "):
             try:
                 os.remove(command.removeprefix("boom "))
@@ -264,7 +264,7 @@ while True:
                     print("Aborted.")
         else:
             print("'rm' takes at least one argument, <file>")
-    elif command.startswith("banana"):
+    elif command.startswith("banana"): # banana
         if command.startswith("banana "):
             try:
                 os.mkdir(command.removeprefix("banana "))
@@ -273,7 +273,7 @@ while True:
                 print(f"Error: {e}")
         else:
             print("'banana' takes at least one argument, <dir>")
-    elif command.startswith("touch"):
+    elif command.startswith("touch"): # touch
         if command.startswith("touch "):
             try:
                 Path(f"{command.removeprefix('touch ')}").touch()
@@ -295,4 +295,5 @@ while True:
         inSolusDirectory = "~"
 
 # like and subscribe for more epic code
+
 
