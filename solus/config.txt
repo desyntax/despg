@@ -1,0 +1,4 @@
+[DEFAULT]
+username = desyntax
+password = password
+solusname = Solus
