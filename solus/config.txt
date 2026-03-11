@@ -2,3 +2,4 @@
 username = desyntax
 password = password
 solusname = Solus
+version = indev_3
