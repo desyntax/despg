@@ -1,4 +1,4 @@
-# SOLUS by DESYNTAX - VERSION indev_3 - CREATED 24/02/26 - LAST UPDATED 10/03/26
+# SOLUS by DESYNTAX - VERSION indev_3 - CREATED 24/02/26 - LAST UPDATED 11/03/26
 print("Starting CLI...")
 dangerousProceed = ""
 
@@ -15,7 +15,7 @@ shutil
 pathlib
 configparser
 On your machine's command line, run 'pip install <module>'.
-You should be able to run Solus without these modules imported, but some functionalities could be broken because of this.
+You should be able to run Solus without these modules imported, but functionality will be limited.
 Proceed? (y/N)""")
     dangerousProceed = input("> ")
     if dangerousProceed == "y".casefold():
@@ -30,21 +30,45 @@ bootStart = time.time()
 print("Loaded necessary modules.")
 
 # config
-config = configparser.ConfigParser()
-config.read("config.txt")
-solus_info = {
-    "username": config['SOLUS_INFO']['username'],
-    "password": config['SOLUS_INFO']['password'],
-    "solusname": config['SOLUS_INFO']['solusname']
-}
+try:
+    config = configparser.ConfigParser()
+    config.read("config.txt")
+    solus_info = {
+        "username": config['SOLUS_INFO']['username'],
+        "password": config['SOLUS_INFO']['password'],
+        "solusname": config['SOLUS_INFO']['solusname']}
+    version = config['SOLUS_INFO']['version']
+except KeyError:
+    print("Error loading configuration file. Would you like to create it? (Y/n)")
+    choice = input("> ")
+    if choice == "n":
+        print("Aborted.")
+        exit()
+    else:
+        Path.touch("config.txt")
+        config['SOLUS_INFO'] = {
+            'username': 'guest',
+            'password': 'password',
+            'solusname': 'Solus',
+            'version': 'indev_3'}
+        with open('config.txt', 'w') as file:
+            config.write(file)
+    config.read("config.txt")
+    solus_info = {
+        "username": config['SOLUS_INFO']['username'],
+        "password": config['SOLUS_INFO']['password'],
+        "solusname": config['SOLUS_INFO']['solusname']}
+    version = config['SOLUS_INFO']['version']
+    print("Created configuration file.")
+    print("Username: 'guest'; password: 'password'.")
 print("Loaded configuration file.")
 
 # variables
-welcomeMessage = "Solus CLI indev_3, created by Desyntax on 24/02/2026."
+welcomeMessage = f"Solus CLI {version}, created by Desyntax on 24/02/2026."
 command = ""
 cwd = __file__.removesuffix("solus.py")
 inSolusDirectory = "$"
-helpList = """Solus command line interface, build indev_3. Open-sourced project.
+helpList = f"""Solus command line interface, build {version}. Open-sourced project.
 Command format:
 command <necessary_arguments> [;optional_arguments] -- Description [modules_necessary]
 Interpreter format:
@@ -60,15 +84,16 @@ nano <file> [;a]        -- Writes text in <file>
 banana <dir>            -- Creates a directory called <dir> [os]
 touch <file>            -- Creates a file called <file> [pathlib]
 boom <file              -- Deletes <file> from current directory [shutil, os]
-rep <file> <str>        -- Renames <file> to <str>
-username <str>          -- Sets a new username
-password <str>          -- Sets a new password
-solusname <str>         -- Sets a new name for Solus
+rep <file> <str/dir>    -- Renames <file> to <str>, or moves <file> to <dir> [os]
+copy <file> <dir>       -- Copies <file> to <dir> [pathlib]
+username <str>          -- Sets a new username [configparser]
+password <str>          -- Sets a new password [configparser]
+solusname <str>         -- Sets a new name for Solus [configparser]
 info                    -- Prints information about Solus
 copyright               -- Prints copyright information about Solus
 
 Use help [command] to view more details about a command."""
-copyr = "Solus indev_2, created by Desyntax. All content, including code, are public domain."
+copyr = f"Solus {version}, created by Desyntax. All content, including source code, are public domain."
 print("Loaded variables.")
 
 # definitions
@@ -99,10 +124,14 @@ def write(mode):
         file.write(newline + "\n")
     file.close()
 def modifyInfo(part):
-    global config, solus_info
+    global config, solus_info, command
     if command.startswith(f"{part} "):
         newName = command.removeprefix(f"{part} ")
         config['SOLUS_INFO'][part] = newName
+        if part in solus_info:
+            solus_info[part] = newName
+        with open("config.txt", "w") as f:
+            config.write(f)
         print(f"Updated {part} to {newName}.")
     else:
         print(f"'{part}' takes one argument, <str>.")
@@ -113,8 +142,7 @@ if dangerousProceed != "y":
     print(f"Found {os.cpu_count()} CPU threads.")
     try:
         fileStats = str(os.stat(__file__)).split(", ")
-        fileSize = str(fileStats[6]).removeprefix("st_size=")
-        fileSize = int(fileSize)
+        fileSize = int(str(fileStats[6]).removeprefix("st_size="))
         print(f"Solus occupies {fileSize:,d} bytes of disk space.")
         del fileStats, fileSize
     except FileNotFoundError:
@@ -143,31 +171,31 @@ while True:
             print(command.removeprefix("output "))
         else:
             print("'output' takes one argument, <str>.")
-    elif command.startswith("nano"): # nano
-        if command.startswith("nano "):
+    elif command.startswith("scan"): # scan
+        if command.startswith("scan "):
             try:
-                file = open(command.removeprefix('nano '))
+                file = open(command.removeprefix('scan '))
                 file.close()
                 try:
-                    file = open(f"{command.removeprefix('nano ')}", "r")
+                    file = open(f"{command.removeprefix('scan ')}", "r")
                     print(file.read())
                     file.close()
                 except FileNotFoundError:
-                    print(f"File '{command.removeprefix('nano ')}' not found. Check your spelling, its existence, or your permissions.")
+                    print(f"File '{command.removeprefix('scan ')}' not found. Check your spelling, its existence, or your permissions.")
             except IsADirectoryError:
-                print(f"'{command.removeprefix('nano ')}' is a directory, not a file.")
+                print(f"'{command.removeprefix('scan ')}' is a directory, not a file.")
             except FileNotFoundError:
-                print(f"'{command.removeprefix('nano ')}' does not exist. Use 'touch' to create it.")
+                print(f"'{command.removeprefix('scan ')}' does not exist. Use 'touch' to create it.")
             except PermissionError:
-                print(f"Solus doesn't have permissions to read '{command.removeprefix('nano ')}'. Are you root?")
+                print(f"Solus doesn't have permissions to read '{command.removeprefix('scan ')}'. Are you root?")
             except OSError:
-                print(f"Solus couldn't open '{command.removeprefix('nano ')}'.")
+                print(f"Solus couldn't open '{command.removeprefix('scan ')}'.")
             except UnicodeDecodeError:
-                print(f"'{command.removeprefix('nano ')}' can't be read because of a Unicode decode error.")
+                print(f"'{command.removeprefix('scan ')}' can't be read because of a Unicode decode error.")
             except MemoryError:
                 print("There isn't enough memory on this system to read this file.")
         else:
-            print("'nano' takes one argument, <file>.")
+            print("'scan' takes one argument, <file>.")
     elif command.startswith("username"): # username
         modifyInfo("username")
     elif command.startswith("password"): # password
@@ -212,11 +240,12 @@ while True:
                     print("'info.txt' was not found. Are you in Solus' directory?")
     elif command.startswith("rep"): # rep
         if command.startswith("rep "):
-            rep()
+            rep = command.split(maxsplit=2)
             os.rename(rep[1], rep[2])
-            print(f"Successfully renamed {rep[1]} to {rep[2]}.")
+            print(f"Successfully modified '{rep[1]}' to '{rep[2]}'.")
+            del rep
         else:
-            print("'rep' takes at least two arguments, <file> and <name>.")
+            print("'rep' takes at least two arguments, <file> and <str/dir>.")
     elif command.startswith("ls"): # ls
         if command.startswith("ls "):
             print("'ls' takes zero arguments.")
@@ -286,7 +315,14 @@ while True:
                 print(f"Error: {e}")
         else:
             print("'touch' takes at least one argument, <file>.")
-                
+    elif command.startswith("copy"): # copy
+        if command.startswith("copy "):
+            copy = command.split(maxsplit=2)
+            shutil.copy2(copy[1], copy[2])
+            print(f"Successfully copied '{copy[1]}' to '{copy[2]}'.")
+            del copy
+        else:
+            print("'copy' takes at least two arguments, <file> and <dir>.")
     else:
         print(f"'{command}' not a recognised command. Use 'help' to view a list of commands.")
     if cwd == __file__.removesuffix("solus.py"):
@@ -295,5 +331,4 @@ while True:
         inSolusDirectory = "~"
 
 # like and subscribe for more epic code
-
 
